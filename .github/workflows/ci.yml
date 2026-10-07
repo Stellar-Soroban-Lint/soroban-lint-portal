@@ -1,0 +1,93 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      # The rule catalog and the sample blurbs are generated from the released
+      # CLI, and the parity gate compares the vendored WASM against a real
+      # binary, so the job needs one. It downloads the same checksum-verified
+      # release asset a user would, pinned by SHA-256 here.
+      - name: Install soroban-lint v0.1.0 (checksum-verified)
+        run: |
+          set -euo pipefail
+          VERSION=v0.1.0
+          ASSET="soroban-lint-${VERSION}-x86_64-unknown-linux-gnu.tar.gz"
+          BASE="https://github.com/Stellar-Soroban-Lint/soroban-lint-core/releases/download/${VERSION}"
+          curl -fsSLO "${BASE}/${ASSET}"
+          echo "1f264319130e419fefe73e21515b00cfd8824210476dd198207279413836d425  ${ASSET}" | sha256sum -c -
+          tar xzf "${ASSET}"
+          echo "SOROBAN_LINT_BIN=${PWD}/soroban-lint-${VERSION}-x86_64-unknown-linux-gnu/soroban-lint" >> "${GITHUB_ENV}"
+          echo "SOROBAN_LINT_VERSION=0.1.0" >> "${GITHUB_ENV}"
+
+      - name: Generate the catalog, samples, and self-hosted Monaco
+        run: npm run generate
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Unit tests (includes the WASM-vs-CLI parity gate)
+        run: npm run test
+
+      - name: Production build
+        run: npm run build
+
+  e2e:
+    name: e2e
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Install soroban-lint v0.1.0 (checksum-verified)
+        run: |
+          set -euo pipefail
+          VERSION=v0.1.0
+          ASSET="soroban-lint-${VERSION}-x86_64-unknown-linux-gnu.tar.gz"
+          BASE="https://github.com/Stellar-Soroban-Lint/soroban-lint-core/releases/download/${VERSION}"
+          curl -fsSLO "${BASE}/${ASSET}"
+          echo "1f264319130e419fefe73e21515b00cfd8824210476dd198207279413836d425  ${ASSET}" | sha256sum -c -
+          tar xzf "${ASSET}"
+          echo "SOROBAN_LINT_BIN=${PWD}/soroban-lint-${VERSION}-x86_64-unknown-linux-gnu/soroban-lint" >> "${GITHUB_ENV}"
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Drive the portal in a browser
+        run: npm run e2e
+
+      - uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7
