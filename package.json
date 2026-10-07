@@ -1,0 +1,46 @@
+{
+  "name": "soroban-lint-portal",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Browser portal for soroban-lint: runs the real WebAssembly build client-side.",
+  "license": "MIT",
+  "scripts": {
+    "catalog": "node scripts/generate-rule-catalog.mjs",
+    "fixtures": "bash scripts/sync-fixtures.sh",
+    "corpus": "bash scripts/sync-corpus.sh",
+    "generate": "npm run catalog && npm run monaco && npm run samples",
+    "monaco": "node scripts/sync-monaco.mjs",
+    "parity": "node scripts/parity-report.mjs",
+    "samples": "node scripts/generate-samples.mjs",
+    "predev": "npm run generate",
+    "dev": "next dev",
+    "prebuild": "npm run generate",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "typegen": "next typegen",
+    "typecheck": "next typegen && tsc --noEmit",
+    "test": "vitest run",
+    "e2e": "playwright test",
+    "verify": "npm run generate && npm run typecheck && npm run lint && npm run test && npm run build"
+  },
+  "dependencies": {
+    "@monaco-editor/react": "^4.7.0",
+    "next": "16.3.8",
+    "react": "19.2.8",
+    "react-dom": "19.2.8"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
+    "@playwright/test": "^1.63.0",
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^24",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.3.8",
+    "tailwindcss": "^4",
+    "typescript": "^5",
+    "vitest": "^5.0.3"
+  }
+}
