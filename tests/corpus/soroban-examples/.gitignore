@@ -1,0 +1,8 @@
+# Only the `.rs` files of the pinned corpus are committed. The parity gate reads
+# nothing else, and committing the cloned repository's history and binary test
+# data would bloat this repository for no benefit. `scripts/sync-corpus.sh`
+# re-fetches the full checkout at the pinned commit when it needs refreshing.
+*
+!**/
+!**/*.rs
+!.gitignore
