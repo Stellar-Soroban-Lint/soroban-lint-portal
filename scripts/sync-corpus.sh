@@ -36,5 +36,21 @@ if [ "${ACTUAL}" != "${COMMIT}" ]; then
   exit 1
 fi
 
+# Keep the checkout usable but out of the repository's history. Only the `.rs`
+# files are committed (see the .gitignore below): the parity gate reads nothing
+# else, and keeping the clone would record a gitlink the gate cannot use.
+rm -rf "${DEST}/.git"
+cat > "${DEST}/.gitignore" <<'EOF'
+# Only the `.rs` files of the pinned corpus are committed. The parity gate reads
+# nothing else, and committing the cloned repository's history and binary test
+# data would bloat this repository for no benefit. `scripts/sync-corpus.sh`
+# re-fetches the full checkout at the pinned commit when it needs refreshing.
+*
+!**/
+!**/*.rs
+!.gitignore
+EOF
+
 COUNT="$(find "${DEST}" -name '*.rs' -not -path '*/target/*' | wc -l)"
 echo "==> ${COUNT} .rs files at ${ACTUAL}"
+echo "==> stripped .git; run 'git add ${DEST#"${HERE}"/}' to stage the corpus"
