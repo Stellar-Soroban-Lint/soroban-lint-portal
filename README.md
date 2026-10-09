@@ -1,5 +1,7 @@
 # soroban-lint-portal
 
+[![Documentation](https://img.shields.io/badge/docs-online-7C3AED)](https://stellar-soroban-lint.github.io/soroban-lint-core/)
+
 A browser front end for [`soroban-lint`](https://github.com/Stellar-Soroban-Lint/soroban-lint-core),
 the syntactic Soroban contract linter.
 
@@ -24,6 +26,9 @@ editor never leaves the browser.
 | Browser tests | Playwright, against the production build or a deployed URL, with an axe accessibility pass |
 
 ## Running it
+
+The [documentation](https://stellar-soroban-lint.github.io/soroban-lint-core/) covers the live
+playground, rule catalog, architecture, and WASM-to-CLI parity guarantee.
 
 ```bash
 npm ci
