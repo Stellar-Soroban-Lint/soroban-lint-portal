@@ -1,3 +1,6 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
+
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type Page } from "@playwright/test";
 
@@ -9,6 +12,21 @@ import { encodeSource } from "../../src/lib/share";
  * real browser, against the production build (or, when `E2E_BASE_URL` is set,
  * against the deployed site — the same suite runs on both).
  */
+
+const EXPECTED_VERSION = readFileSync(
+  resolve(process.cwd(), "SOROBAN_LINT_VERSION"),
+  "utf8",
+).trim().replace(/^v/, "");
+
+function portalUrl(path: string): string {
+  const configured = process.env["E2E_BASE_URL"];
+  const base = new URL(configured ?? "http://127.0.0.1:3100");
+  const basePath = configured ? base.pathname.replace(/\/+$/, "") : "";
+  const route = path.startsWith("/") ? path : `/${path}`;
+  const url = new URL(`${basePath}${route}`, base.origin);
+  if (!url.pathname.endsWith("/")) url.pathname += "/";
+  return url.toString();
+}
 
 /** Wait until the WASM module has been instantiated in the browser. */
 async function waitForLinter(page: Page) {
@@ -68,12 +86,12 @@ impl Typed {
 `;
 
 test("runs the real WASM linter in the browser", async ({ page }) => {
-  await page.goto("/");
+  await page.goto(portalUrl("/"));
   await waitForLinter(page);
 
   // The version comes from the compiled-in Rust crate, so this proves the
   // module really instantiated rather than a stub rendering.
-  await expect(page.getByTestId("wasm-status")).toContainText("soroban-lint-wasm 0.1.0");
+  await expect(page.getByTestId("wasm-status")).toContainText(`soroban-lint-wasm ${EXPECTED_VERSION}`);
 
   // The landing page carries the scope statement verbatim.
   await expect(page.getByTestId("scope-statement")).toHaveText(SCOPE_STATEMENT_PLAIN);
@@ -110,7 +128,7 @@ test("runs the real WASM linter in the browser", async ({ page }) => {
 });
 
 test("lints a contract typed into the editor, at the right line", async ({ page }) => {
-  await page.goto("/");
+  await page.goto(portalUrl("/"));
   await waitForLinter(page);
 
   await typeIntoEditor(page, TYPED_VULNERABLE);
@@ -147,7 +165,7 @@ test("loads a snippet from a share link, and nothing is uploaded", async ({ page
   const requests: string[] = [];
   page.on("request", (request) => requests.push(request.url()));
 
-  await page.goto(`/#source=${encodeSource(shared)}`);
+  await page.goto(portalUrl(`/#source=${encodeSource(shared)}`));
   await waitForLinter(page);
 
   await expect(page.getByTestId("finding")).toHaveCount(1);
@@ -160,7 +178,7 @@ test("loads a snippet from a share link, and nothing is uploaded", async ({ page
 });
 
 test("catalogues the registered rules", async ({ page }) => {
-  await page.goto("/");
+  await page.goto(portalUrl("/"));
   await waitForLinter(page);
   const catalog = page.getByTestId("rule-catalog");
   await catalog.locator("summary").click();
@@ -169,7 +187,7 @@ test("catalogues the registered rules", async ({ page }) => {
 });
 
 test("a rule page documents its example and limitations", async ({ page }) => {
-  await page.goto("/rules/SL001");
+  await page.goto(portalUrl("/rules/SL001"));
   await expect(page.getByRole("heading", { name: "SL001", exact: true })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Limitations" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Flagged", exact: true })).toBeVisible();
@@ -177,7 +195,7 @@ test("a rule page documents its example and limitations", async ({ page }) => {
 
 for (const path of ["/", "/rules", "/rules/SL001", "/docs"]) {
   test(`has no automatically-detectable accessibility violations on ${path}`, async ({ page }) => {
-    await page.goto(path);
+    await page.goto(portalUrl(path));
     if (path === "/") {
       await waitForLinter(page);
     }

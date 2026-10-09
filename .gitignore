@@ -46,3 +46,6 @@ next-env.d.ts
 
 # self-hosted Monaco, copied from node_modules by scripts/sync-monaco.mjs
 /public/monaco/
+
+# soroban-lint release binary downloaded by scripts/lib/soroban-lint-bin.mjs
+/.cache/

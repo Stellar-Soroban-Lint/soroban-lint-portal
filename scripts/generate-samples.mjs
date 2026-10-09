@@ -23,6 +23,8 @@ import { mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
+import { resolveSorobanLintBin } from "./lib/soroban-lint-bin.mjs";
+
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const FIXTURES = join(ROOT, "tests", "corpus", "fixtures");
 const OUT_DIR = join(ROOT, "src", "generated");
@@ -85,26 +87,7 @@ const SELECTION = [
   },
 ];
 
-function nativeCli() {
-  const candidates = [
-    process.env.SOROBAN_LINT_BIN,
-    resolve(ROOT, "..", "soroban-lint-core", "target", "release", "soroban-lint"),
-    resolve(ROOT, "..", "soroban-lint-core", "target", "debug", "soroban-lint"),
-  ].filter(Boolean);
-
-  for (const candidate of candidates) {
-    const probe = spawnSync(candidate, ["--version"], { encoding: "utf8" });
-    if (!probe.error && probe.status === 0) {
-      return candidate;
-    }
-  }
-  throw new Error(
-    "cannot generate samples: no working soroban-lint binary. Set SOROBAN_LINT_BIN " +
-      "or run `cargo build --release -p soroban-lint-cli` in ../soroban-lint-core.",
-  );
-}
-
-const binary = nativeCli();
+const { path: binary } = await resolveSorobanLintBin();
 
 /** Rule IDs, from the same CLI the catalog is generated from. */
 function ruleIds() {

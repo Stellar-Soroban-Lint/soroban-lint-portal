@@ -14,28 +14,11 @@ import { readFileSync, readdirSync, statSync } from "node:fs";
 import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
+import { resolveSorobanLintBin } from "./lib/soroban-lint-bin.mjs";
+
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const WASM_PATH = join(ROOT, "src", "wasm", "soroban_lint_wasm_bg.wasm");
 
-function nativeCli() {
-  const candidates = [
-    process.env.SOROBAN_LINT_BIN,
-    resolve(ROOT, "..", "soroban-lint-core", "target", "release", "soroban-lint"),
-    resolve(ROOT, "..", "soroban-lint-core", "target", "debug", "soroban-lint"),
-  ].filter(Boolean);
-  for (const candidate of candidates) {
-    try {
-      statSync(candidate);
-      return candidate;
-    } catch {
-      // try the next one
-    }
-  }
-  throw new Error(
-    "no native soroban-lint binary; set SOROBAN_LINT_BIN or run " +
-      "`cargo build --release -p soroban-lint-cli` in ../soroban-lint-core",
-  );
-}
 
 function collect(dir, kind, out) {
   for (const entry of readdirSync(dir).sort()) {
@@ -53,7 +36,7 @@ const corpus = [
 ].sort((a, b) => a.path.localeCompare(b.path));
 
 const experimental = process.argv.includes("--experimental");
-const binary = nativeCli();
+const { path: binary } = await resolveSorobanLintBin();
 
 const { default: init, lintSource, version } = await import(
   join(ROOT, "src", "wasm", "soroban_lint_wasm.js")

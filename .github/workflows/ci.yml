@@ -23,22 +23,10 @@ jobs:
       - name: Install
         run: npm ci
 
-      # The rule catalog and the sample blurbs are generated from the released
-      # CLI, and the parity gate compares the vendored WASM against a real
-      # binary, so the job needs one. It downloads the same checksum-verified
-      # release asset a user would, pinned by SHA-256 here.
-      - name: Install soroban-lint v0.1.0 (checksum-verified)
-        run: |
-          set -euo pipefail
-          VERSION=v0.1.0
-          ASSET="soroban-lint-${VERSION}-x86_64-unknown-linux-gnu.tar.gz"
-          BASE="https://github.com/Stellar-Soroban-Lint/soroban-lint-core/releases/download/${VERSION}"
-          curl -fsSLO "${BASE}/${ASSET}"
-          echo "1b377f6da30e01c7577e220814c2a960f358eb622a6a2ca9ce64ad3b2b1c0321  ${ASSET}" | sha256sum -c -
-          tar xzf "${ASSET}"
-          echo "SOROBAN_LINT_BIN=${PWD}/soroban-lint-${VERSION}-x86_64-unknown-linux-gnu/soroban-lint" >> "${GITHUB_ENV}"
-          echo "SOROBAN_LINT_VERSION=0.1.0" >> "${GITHUB_ENV}"
-
+      # The rule catalog, sample blurbs, and the parity gate all run the CLI.
+      # `scripts/lib/soroban-lint-bin.mjs` downloads the pinned release asset and
+      # verifies its published `.sha256` itself, so this job needs no Rust
+      # toolchain and no hardcoded digest to keep in step with a release.
       - name: Generate the catalog, samples, and self-hosted Monaco
         run: npm run generate
 
@@ -68,16 +56,8 @@ jobs:
       - name: Install
         run: npm ci
 
-      - name: Install soroban-lint v0.1.0 (checksum-verified)
-        run: |
-          set -euo pipefail
-          VERSION=v0.1.0
-          ASSET="soroban-lint-${VERSION}-x86_64-unknown-linux-gnu.tar.gz"
-          BASE="https://github.com/Stellar-Soroban-Lint/soroban-lint-core/releases/download/${VERSION}"
-          curl -fsSLO "${BASE}/${ASSET}"
-          echo "1b377f6da30e01c7577e220814c2a960f358eb622a6a2ca9ce64ad3b2b1c0321  ${ASSET}" | sha256sum -c -
-          tar xzf "${ASSET}"
-          echo "SOROBAN_LINT_BIN=${PWD}/soroban-lint-${VERSION}-x86_64-unknown-linux-gnu/soroban-lint" >> "${GITHUB_ENV}"
+      # The build that backs this job runs `npm run generate`, which fetches and
+      # verifies the pinned release CLI on its own.
 
       - name: Install Chromium
         run: npx playwright install --with-deps chromium

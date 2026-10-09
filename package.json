@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "description": "Browser portal for soroban-lint: runs the real WebAssembly build client-side.",
-  "license": "MIT",
+  "license": "MIT OR Apache-2.0",
   "scripts": {
     "catalog": "node scripts/generate-rule-catalog.mjs",
     "fixtures": "bash scripts/sync-fixtures.sh",
@@ -16,7 +16,7 @@
     "dev": "next dev",
     "prebuild": "npm run generate",
     "build": "next build",
-    "start": "next start",
+    "start": "node scripts/serve-static.mjs",
     "lint": "eslint",
     "typegen": "next typegen",
     "typecheck": "next typegen && tsc --noEmit",

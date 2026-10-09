@@ -6,13 +6,15 @@ A browser front end for [`soroban-lint`](https://github.com/Stellar-Soroban-Lint
 the syntactic Soroban contract linter.
 
 It runs the **real** linter client-side: `soroban-lint-core` is compiled to WebAssembly with
-`wasm-pack`, optimized with `wasm-opt -Oz`, and vendored into `src/wasm/`. There is no server
+`wasm-pack` and vendored into `src/wasm/`. There is no server
 component and no reimplementation of the rules — the portal calls the same `lintSource` the CLI and
 the GitHub Action use, through the same JSON contract, and a parity test asserts the browser build
 and the native CLI report identical diagnostics across the whole corpus. Source you paste into the
 editor never leaves the browser.
 
 > soroban-lint performs syntactic, per-file analysis of Soroban contract source using the Rust AST. It flags patterns associated with missing authorization checks, panic paths, unchecked arithmetic, and storage hazards in `#[contractimpl]` functions. It does not expand macros, resolve types, or follow calls across files, so it can miss real issues (false negatives) and flag safe code (false positives). A clean report is not evidence a contract is secure, and this tool is not a substitute for an audit.
+
+[Documentation](https://stellar-soroban-lint.github.io/soroban-lint-core/) · [Core CLI](https://github.com/Stellar-Soroban-Lint/soroban-lint-core) · [GitHub Action](https://github.com/Stellar-Soroban-Lint/soroban-lint-action) · [Demo PR #1 (closed): annotations](https://github.com/Stellar-Soroban-Lint/soroban-lint-portal/pull/1) · [Demo PR #2 (merged): passing run](https://github.com/Stellar-Soroban-Lint/soroban-lint-portal/pull/2) · [Issues](https://github.com/Stellar-Soroban-Lint/soroban-lint-portal/issues)
 
 ## Stack
 
@@ -56,7 +58,7 @@ deployed site, set `E2E_BASE_URL=https://…` and no local server is started.
 
 - `src/wasm/soroban_lint_wasm.js` and `src/wasm/*.d.ts` are the unmodified `wasm-pack --target web`
   glue and typings.
-- `src/wasm/soroban_lint_wasm_bg.wasm` is the optimized binary. `next.config.ts` emits it as a build
+- `src/wasm/soroban_lint_wasm_bg.wasm` is the WebAssembly binary. `next.config.ts` emits it as a build
   asset, so it gets a content-hashed URL and stays out of the JavaScript bundle; it is instantiated
   once, in the browser only.
 - `src/wasm/index.ts` is the only place that touches the generated module; the rest of the app uses
@@ -79,10 +81,29 @@ applies to every finding. The portal adds no analysis of its own.
 
 ## Related repositories
 
-- [`soroban-lint-core`](https://github.com/Stellar-Soroban-Lint/soroban-lint-core) — the engine compiled to the WebAssembly this portal runs.
-- [`soroban-lint-action`](https://github.com/Stellar-Soroban-Lint/soroban-lint-action) — the same linter in CI.
-- [`CONTRIBUTING.md`](CONTRIBUTING.md) and [`SECURITY.md`](SECURITY.md).
+| Project | Role or evidence |
+|---|---|
+| [`soroban-lint-core`](https://github.com/Stellar-Soroban-Lint/soroban-lint-core) | Rust analysis engine, CLI, docs site, and WASM source. |
+| [`soroban-lint-action`](https://github.com/Stellar-Soroban-Lint/soroban-lint-action) | Runs the same linter in CI. |
+| [PR #1 (closed): annotations on intentionally vulnerable contracts](https://github.com/Stellar-Soroban-Lint/soroban-lint-portal/pull/1) | Findings and check annotations; kept for reference. |
+| [PR #2 (merged): passing run](https://github.com/Stellar-Soroban-Lint/soroban-lint-portal/pull/2) | `fail-on: never`, five inline annotations, and passing checks. |
+| [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md) | Project guidance. |
 
 ## License
 
-MIT OR Apache-2.0.
+Licensed under [MIT](LICENSE-MIT) or [Apache-2.0](LICENSE-APACHE).
+
+## Maintainers
+
+| Name | GitHub | Telegram |
+|---|---|---|
+| ojuotimi932 | [@ojuotimi932](https://github.com/ojuotimi932) | [Telegram](https://t.me/+MrTh9uraIS5jMjhk) |
+
+## Community
+
+- Telegram: https://t.me/+MrTh9uraIS5jMjhk
+- Discord: https://discord.gg/xZRZT6TpB
+
+## Contributors
+
+[![Contributors](https://contrib.rocks/image?repo=Stellar-Soroban-Lint/soroban-lint-portal)](https://github.com/Stellar-Soroban-Lint/soroban-lint-portal/graphs/contributors)

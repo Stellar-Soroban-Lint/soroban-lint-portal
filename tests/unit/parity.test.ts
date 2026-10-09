@@ -110,7 +110,7 @@ function normalize(diagnostics: readonly Diagnostic[]): unknown[] {
 let binary: string;
 
 beforeAll(async () => {
-  binary = requireNativeCliPath();
+  binary = await requireNativeCliPath();
   await init({ module_or_path: readFileSync(WASM_PATH) });
 });
 
