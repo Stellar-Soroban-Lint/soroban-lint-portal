@@ -89,4 +89,4 @@ applies to every finding. The portal adds no analysis of its own.
 
 ## License
 
-MIT OR Apache-2.0.
+Licensed under [MIT](LICENSE-MIT) or [Apache-2.0](LICENSE-APACHE).
