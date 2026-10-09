@@ -1,8 +1,10 @@
+import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 
 import { beforeAll, describe, expect, it } from "vitest";
 
+import { PINNED_SOROBAN_LINT_VERSION } from "../../scripts/lib/soroban-lint-bin.mjs";
 import { parseDiagnostics } from "@/lib/diagnostics";
 import { parseRuleCatalog } from "@/lib/rules";
 import { SAMPLES, sampleById } from "@/lib/samples";
@@ -26,6 +28,21 @@ function rulesFor(path: string, source: string, experimental: boolean): string[]
 }
 
 describe("the vendored WASM build", () => {
+  it("keeps the version pin, provenance, and binary digest aligned", () => {
+    const provenance = readFileSync(
+      fileURLToPath(new URL("../../src/wasm/PROVENANCE.md", import.meta.url)),
+      "utf8",
+    );
+    const pinnedTag = `v${PINNED_SOROBAN_LINT_VERSION.replace(/^v/, "")}`;
+    const provenanceTag = provenance.match(/^\| Compatibility pin \| \[`([^`]+)`/m)?.[1];
+    const provenanceHash = provenance.match(/^\| Vendored `\.wasm` SHA-256 \| `([a-f\d]{64})`/m)?.[1];
+    const actualHash = createHash("sha256").update(readFileSync(WASM_PATH)).digest("hex");
+
+    expect(provenanceTag).toBe(pinnedTag);
+    expect(version()).toBe(PINNED_SOROBAN_LINT_VERSION.replace(/^v/, ""));
+    expect(provenanceHash).toBe(actualHash);
+  });
+
   it("reports its version", () => {
     expect(version()).toMatch(/^\d+\.\d+\.\d+$/);
   });
