@@ -25,7 +25,8 @@ import { type RuleMeta } from "@/lib/rules";
 // Point the loader at the copy `scripts/sync-monaco.mjs` vendors into `public/`,
 // so the editor is served from this origin and no request leaves the page. Set at
 // module scope, before any <Editor> mounts.
-loader.config({ paths: { vs: "/monaco/vs" } });
+const basePath = process.env["NEXT_PUBLIC_BASE_PATH"] ?? "";
+loader.config({ paths: { vs: `${basePath}/monaco/vs` } });
 
 export interface CodeEditorProps {
   value: string;

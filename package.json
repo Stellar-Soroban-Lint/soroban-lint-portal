@@ -16,7 +16,7 @@
     "dev": "next dev",
     "prebuild": "npm run generate",
     "build": "next build",
-    "start": "next start",
+    "start": "node scripts/serve-static.mjs",
     "lint": "eslint",
     "typegen": "next typegen",
     "typecheck": "next typegen && tsc --noEmit",
