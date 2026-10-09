@@ -23,7 +23,7 @@ jobs:
         id: lint
         uses: Stellar-Soroban-Lint/soroban-lint-action@v0
         with:
-          version: v0.1.0
+          version: v0.1.2
           experimental: "true"
           fail-on: never
           max-annotations: "5"
