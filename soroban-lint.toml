@@ -1,0 +1,2 @@
+include = ["demo-contracts/contracts/**/*.rs"]
+exclude = ["node_modules/**", "target/**", ".next/**", "out/**"]
