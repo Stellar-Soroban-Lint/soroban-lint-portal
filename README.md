@@ -14,6 +14,8 @@ editor never leaves the browser.
 
 > soroban-lint performs syntactic, per-file analysis of Soroban contract source using the Rust AST. It flags patterns associated with missing authorization checks, panic paths, unchecked arithmetic, and storage hazards in `#[contractimpl]` functions. It does not expand macros, resolve types, or follow calls across files, so it can miss real issues (false negatives) and flag safe code (false positives). A clean report is not evidence a contract is secure, and this tool is not a substitute for an audit.
 
+[Documentation](https://stellar-soroban-lint.github.io/soroban-lint-core/) · [Core CLI](https://github.com/Stellar-Soroban-Lint/soroban-lint-core) · [GitHub Action](https://github.com/Stellar-Soroban-Lint/soroban-lint-action) · [Demo PR #1 (closed): annotations](https://github.com/Stellar-Soroban-Lint/soroban-lint-portal/pull/1) · [Demo PR #2 (merged): passing run](https://github.com/Stellar-Soroban-Lint/soroban-lint-portal/pull/2) · [Issues](https://github.com/Stellar-Soroban-Lint/soroban-lint-portal/issues)
+
 ## Stack
 
 | | |
@@ -90,3 +92,18 @@ applies to every finding. The portal adds no analysis of its own.
 ## License
 
 Licensed under [MIT](LICENSE-MIT) or [Apache-2.0](LICENSE-APACHE).
+
+## Maintainers
+
+| Name | GitHub | Telegram |
+|---|---|---|
+| ojuotimi932 | [@ojuotimi932](https://github.com/ojuotimi932) | [Telegram](https://t.me/+MrTh9uraIS5jMjhk) |
+
+## Community
+
+- Telegram: https://t.me/+MrTh9uraIS5jMjhk
+- Discord: https://discord.gg/xZRZT6TpB
+
+## Contributors
+
+[![Contributors](https://contrib.rocks/image?repo=Stellar-Soroban-Lint/soroban-lint-portal)](https://github.com/Stellar-Soroban-Lint/soroban-lint-portal/graphs/contributors)
