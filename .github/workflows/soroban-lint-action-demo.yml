@@ -17,6 +17,8 @@ jobs:
 
       # Same findings as the failing demo, but fail-on: never keeps the step
       # green, and a low max-annotations shows the cap and its log message.
+      # No SARIF upload here: code scanning would mark the check failed for the
+      # error-level alerts, and this demo is about the passing fail-on outcome.
       - name: Run soroban-lint
         id: lint
         uses: Stellar-Soroban-Lint/soroban-lint-action@v0
@@ -25,10 +27,3 @@ jobs:
           experimental: "true"
           fail-on: never
           max-annotations: "5"
-          sarif-file: soroban-lint.sarif
-
-      - name: Upload SARIF
-        if: always()
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: soroban-lint.sarif
