@@ -6,7 +6,7 @@ A browser front end for [`soroban-lint`](https://github.com/Stellar-Soroban-Lint
 the syntactic Soroban contract linter.
 
 It runs the **real** linter client-side: `soroban-lint-core` is compiled to WebAssembly with
-`wasm-pack`, optimized with `wasm-opt -Oz`, and vendored into `src/wasm/`. There is no server
+`wasm-pack` and vendored into `src/wasm/`. There is no server
 component and no reimplementation of the rules — the portal calls the same `lintSource` the CLI and
 the GitHub Action use, through the same JSON contract, and a parity test asserts the browser build
 and the native CLI report identical diagnostics across the whole corpus. Source you paste into the
@@ -56,7 +56,7 @@ deployed site, set `E2E_BASE_URL=https://…` and no local server is started.
 
 - `src/wasm/soroban_lint_wasm.js` and `src/wasm/*.d.ts` are the unmodified `wasm-pack --target web`
   glue and typings.
-- `src/wasm/soroban_lint_wasm_bg.wasm` is the optimized binary. `next.config.ts` emits it as a build
+- `src/wasm/soroban_lint_wasm_bg.wasm` is the WebAssembly binary. `next.config.ts` emits it as a build
   asset, so it gets a content-hashed URL and stays out of the JavaScript bundle; it is instantiated
   once, in the browser only.
 - `src/wasm/index.ts` is the only place that touches the generated module; the rest of the app uses
@@ -79,9 +79,13 @@ applies to every finding. The portal adds no analysis of its own.
 
 ## Related repositories
 
-- [`soroban-lint-core`](https://github.com/Stellar-Soroban-Lint/soroban-lint-core) — the engine compiled to the WebAssembly this portal runs.
-- [`soroban-lint-action`](https://github.com/Stellar-Soroban-Lint/soroban-lint-action) — the same linter in CI.
-- [`CONTRIBUTING.md`](CONTRIBUTING.md) and [`SECURITY.md`](SECURITY.md).
+| Project | Role or evidence |
+|---|---|
+| [`soroban-lint-core`](https://github.com/Stellar-Soroban-Lint/soroban-lint-core) | Rust analysis engine, CLI, docs site, and WASM source. |
+| [`soroban-lint-action`](https://github.com/Stellar-Soroban-Lint/soroban-lint-action) | Runs the same linter in CI. |
+| [PR #1 (closed): annotations on intentionally vulnerable contracts](https://github.com/Stellar-Soroban-Lint/soroban-lint-portal/pull/1) | Findings and check annotations; kept for reference. |
+| [PR #2 (merged): passing run](https://github.com/Stellar-Soroban-Lint/soroban-lint-portal/pull/2) | `fail-on: never`, five inline annotations, and passing checks. |
+| [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md) | Project guidance. |
 
 ## License
 
