@@ -1,3 +1,6 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
+
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type Page } from "@playwright/test";
 
@@ -9,6 +12,11 @@ import { encodeSource } from "../../src/lib/share";
  * real browser, against the production build (or, when `E2E_BASE_URL` is set,
  * against the deployed site — the same suite runs on both).
  */
+
+const EXPECTED_VERSION = readFileSync(
+  resolve(process.cwd(), "SOROBAN_LINT_VERSION"),
+  "utf8",
+).trim().replace(/^v/, "");
 
 /** Wait until the WASM module has been instantiated in the browser. */
 async function waitForLinter(page: Page) {
@@ -73,7 +81,7 @@ test("runs the real WASM linter in the browser", async ({ page }) => {
 
   // The version comes from the compiled-in Rust crate, so this proves the
   // module really instantiated rather than a stub rendering.
-  await expect(page.getByTestId("wasm-status")).toContainText("soroban-lint-wasm 0.1.0");
+  await expect(page.getByTestId("wasm-status")).toContainText(`soroban-lint-wasm ${EXPECTED_VERSION}`);
 
   // The landing page carries the scope statement verbatim.
   await expect(page.getByTestId("scope-statement")).toHaveText(SCOPE_STATEMENT_PLAIN);
