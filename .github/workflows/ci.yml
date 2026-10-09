@@ -34,7 +34,7 @@ jobs:
           ASSET="soroban-lint-${VERSION}-x86_64-unknown-linux-gnu.tar.gz"
           BASE="https://github.com/Stellar-Soroban-Lint/soroban-lint-core/releases/download/${VERSION}"
           curl -fsSLO "${BASE}/${ASSET}"
-          echo "1f264319130e419fefe73e21515b00cfd8824210476dd198207279413836d425  ${ASSET}" | sha256sum -c -
+          echo "1b377f6da30e01c7577e220814c2a960f358eb622a6a2ca9ce64ad3b2b1c0321  ${ASSET}" | sha256sum -c -
           tar xzf "${ASSET}"
           echo "SOROBAN_LINT_BIN=${PWD}/soroban-lint-${VERSION}-x86_64-unknown-linux-gnu/soroban-lint" >> "${GITHUB_ENV}"
           echo "SOROBAN_LINT_VERSION=0.1.0" >> "${GITHUB_ENV}"
@@ -75,7 +75,7 @@ jobs:
           ASSET="soroban-lint-${VERSION}-x86_64-unknown-linux-gnu.tar.gz"
           BASE="https://github.com/Stellar-Soroban-Lint/soroban-lint-core/releases/download/${VERSION}"
           curl -fsSLO "${BASE}/${ASSET}"
-          echo "1f264319130e419fefe73e21515b00cfd8824210476dd198207279413836d425  ${ASSET}" | sha256sum -c -
+          echo "1b377f6da30e01c7577e220814c2a960f358eb622a6a2ca9ce64ad3b2b1c0321  ${ASSET}" | sha256sum -c -
           tar xzf "${ASSET}"
           echo "SOROBAN_LINT_BIN=${PWD}/soroban-lint-${VERSION}-x86_64-unknown-linux-gnu/soroban-lint" >> "${GITHUB_ENV}"
 
