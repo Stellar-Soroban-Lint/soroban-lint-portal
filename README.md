@@ -1,9 +1,17 @@
 # soroban-lint-portal
 
-[![Documentation](https://img.shields.io/badge/docs-online-7C3AED)](https://stellar-soroban-lint.github.io/soroban-lint-core/)
+<p>
+  <a href="https://github.com/Stellar-Soroban-Lint/soroban-lint-portal/actions/workflows/ci.yml"><img src="https://github.com/Stellar-Soroban-Lint/soroban-lint-portal/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://stellar-soroban-lint.github.io/soroban-lint-portal/"><img src="https://img.shields.io/badge/playground-live-7C3AED" alt="Live playground"></a>
+  <img src="https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-blue" alt="MIT OR Apache-2.0">
+  <a href="https://discord.gg/xZRZT6TpB"><img src="https://img.shields.io/badge/Discord-join-5865F2?logo=discord&logoColor=white" alt="Discord"></a>
+  <a href="https://t.me/+MrTh9uraIS5jMjhk"><img src="https://img.shields.io/badge/Telegram-join-26A5E4?logo=telegram&logoColor=white" alt="Telegram"></a>
+</p>
 
 A browser front end for [`soroban-lint`](https://github.com/Stellar-Soroban-Lint/soroban-lint-core),
 the syntactic Soroban contract linter.
+
+**Open the [live playground](https://stellar-soroban-lint.github.io/soroban-lint-portal/)** or read the [Core documentation](https://stellar-soroban-lint.github.io/soroban-lint-core/).
 
 It runs the **real** linter client-side: `soroban-lint-core` is compiled to WebAssembly with
 `wasm-pack` and vendored into `src/wasm/`. There is no server
@@ -26,6 +34,15 @@ editor never leaves the browser.
 | Analysis | `soroban-lint-wasm` (Rust → WebAssembly), vendored in `src/wasm/` |
 | Unit tests | Vitest, including tests that execute the vendored `.wasm` and the WASM-vs-CLI parity gate |
 | Browser tests | Playwright, against the production build or a deployed URL, with an axe accessibility pass |
+
+## What it does
+
+- Runs Soroban contract source through the shared linter in the browser and presents diagnostics alongside the editor.
+- Provides a generated rule catalog and individual rule pages, including severity, stability, examples, and stated limitations.
+- Supports share links by encoding the selected sample or source in the URL; pasted source is not sent to a server.
+- Uses the same JSON diagnostic contract as the native CLI. The parity test compares both implementations across the corpus.
+
+The analyzer is syntactic and per-file. It does not expand macros, resolve types, or follow calls across files. It can miss real issues and report safe code; a clean result is not evidence of security or a replacement for an audit.
 
 ## Running it
 
@@ -65,6 +82,8 @@ deployed site, set `E2E_BASE_URL=https://…` and no local server is started.
   its typed wrapper.
 - `src/wasm/PROVENANCE.md` records the core commit, the build recipe, and the binary's SHA-256.
 
+The generated rule catalog and WASM compatibility build are checked against the recorded provenance. The portal intentionally uses the documented v0.1.1 WASM compatibility build because the optimized v0.1.2 wasm-pack artifact fails to initialize in the browser with a WebAssembly table-growth error.
+
 ## What is and is not covered
 
 The portal shows whatever the linter reports, including the rules' own stated limitations: the rule
@@ -85,6 +104,7 @@ applies to every finding. The portal adds no analysis of its own.
 |---|---|
 | [`soroban-lint-core`](https://github.com/Stellar-Soroban-Lint/soroban-lint-core) | Rust analysis engine, CLI, docs site, and WASM source. |
 | [`soroban-lint-action`](https://github.com/Stellar-Soroban-Lint/soroban-lint-action) | Runs the same linter in CI. |
+| [`soroban-lint-portal`](https://github.com/Stellar-Soroban-Lint/soroban-lint-portal) | This browser playground and rule catalog. |
 | [PR #1 (closed): annotations on intentionally vulnerable contracts](https://github.com/Stellar-Soroban-Lint/soroban-lint-portal/pull/1) | Findings and check annotations; kept for reference. |
 | [PR #2 (merged): passing run](https://github.com/Stellar-Soroban-Lint/soroban-lint-portal/pull/2) | `fail-on: never`, five inline annotations, and passing checks. |
 | [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md) | Project guidance. |
@@ -103,6 +123,10 @@ Licensed under [MIT](LICENSE-MIT) or [Apache-2.0](LICENSE-APACHE).
 
 - Telegram: https://t.me/+MrTh9uraIS5jMjhk
 - Discord: https://discord.gg/xZRZT6TpB
+
+## Security
+
+See [SECURITY.md](SECURITY.md) to report a vulnerability. The portal aids code review; it is not an audit and does not prove that a contract is secure.
 
 ## Contributors
 
